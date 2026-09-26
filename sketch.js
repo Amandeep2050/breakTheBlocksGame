@@ -7,20 +7,13 @@ const windowTitle = "Break the Block";
 const windowFPS = 100;
 const windowColor = r.WHITE;
 
-function drawRectangles(numberOfRect, prevX, prevY, width, height, color) {
-    let tempColor = color;
+function drawRectangles(numberOfRect, gapFromWindowX, marginX, marginY, rectWidth, rectHeight, rectColor) {
+    if (numberOfRect === 0) return;
 
-    if (numberOfRect === 1) {
-        return;
-    }
+    r.DrawRectangle(gapFromWindowX, marginY, rectWidth, rectHeight, rectColor);
+    const nextGap = gapFromWindowX + rectWidth + 2 * marginX;
 
-    if (geometry.checkCollision(prevY, prevX, width, height, centerX, centerY, ballRadius)) {
-        yAxisFactor = -yAxisFactor;
-        tempColor = r.WHITE;
-    }
-
-    r.DrawRectangle(prevX, prevY, width, height, tempColor);
-    drawRectangles(numberOfRect - 1, prevX + width + 5, prevY, width, height, color);
+    drawRectangles(numberOfRect - 1, nextGap, marginX, marginY, rectWidth, rectHeight, rectColor);
 }
 
 function running() {
@@ -78,6 +71,7 @@ function update() {
 const blockWidth = 60;
 const blockHeight = 20;
 const margin = 30;
+const gapFromWindowX = windowWidth % blockWidth;
 
 function draw() {
     // draw the current state
@@ -87,7 +81,10 @@ function draw() {
 
     r.DrawCircle(centerX, centerY, ballRadius, ballColor);
 
-    drawRectangles((windowWidth - 2 * margin) / 60, margin, margin, blockWidth, blockHeight, r.BLUE);
+    const spaceToDrawRect = windowWidth - 2 * margin;
+    const extraSpace = spaceToDrawRect % 60;
+    const numberOfRect = (spaceToDrawRect - extraSpace) / 60;
+    drawRectangles(numberOfRect, gapFromWindowX, margin, margin, blockWidth, blockHeight, r.BLUE);
 
     r.DrawRectangle(controllerX, controllerY, controllerWidth, controllerHeight, r.BLACK);
 
